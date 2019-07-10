@@ -50,7 +50,22 @@ def anc_string_to_lambda(string):
         return lambda x: float(left)
     if op == "x":
         return lambda x: x
-    return lambda x: operations.get(op)(string_to_lambda(left)(x), string_to_lambda(right)(x))
+    f_is_const = "x" not in left
+    g_is_const = "x" not in right
+    o = operations.get(op)
+    f = anc_string_to_lambda(left)
+    g = anc_string_to_lambda(right)
+    if f_is_const and g_is_const:
+        temp = o(f(0), g(0))
+        return lambda x: temp
+    elif f_is_const and not g_is_const:
+        temp = f(0)
+        return lambda x: o(temp, g(x))
+    elif not f_is_const and g_is_const:
+        temp = g(0)
+        return lambda x: o(f(x), temp)
+    else:
+        return lambda x: o(f(x), g(x))
 
 
 # Ancillary function for unary functions
@@ -59,6 +74,10 @@ def unary_operation_split(data):
         return unary_operation_split(data[1:-1])
     if '0' <= data[0] <= '9':
         return "number", data, ""
+    if data == "e":
+        return "number", "2.71828182846", ""
+    if data == "pi":
+        return "number", "3.14159265359", ""
     if data[0] == 'x':
         return "x", data, ""
     unary_operators = ["abs", "sin", "cos", "tg", "ctg", "arcsin", "arccos", "arctg", "ln"]
@@ -72,6 +91,7 @@ def unary_operation_split(data):
 
 # Splits string of operation to (operator, left_argument, right,argument)
 def operation_split(data):
+    data = data.strip()
     if data[0] == '(' and bracket_closer_pos(data, 0) == len(data) - 1:
         return operation_split(data[1:-1])
     if data[0] == "-":

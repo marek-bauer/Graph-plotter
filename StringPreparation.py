@@ -32,7 +32,7 @@ def prepare(s):
     prev = s
     curr = prev.replace("  ", " ")
     while prev != curr:
-        curr = prev.replace("  ", " ")
+        curr, prev = curr.replace("  ", " "), curr
     curr = abs_replace(curr)
     curr = assumed_multiply(curr)
     return curr
