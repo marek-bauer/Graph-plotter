@@ -7,7 +7,7 @@ def abs_replace(s):
         i = 4
     while i < len(res):
         if res[i] == "|":
-            if '0' <= res[i-1] <= '9' or res[i-1] == 'x' or res[i-1] == ')':
+            if res[i-1] in ")0123456789xei":
                 res = res.replace("|", ")", 1)
             else:
                 res = res.replace("|", "abs(", 1)
@@ -20,7 +20,7 @@ def assumed_multiply(s):
     res = s
     i = 1
     while i < len(res):
-        if ((res[i-1] == ")" or res[i-1] == "x") and (res[i] == "(" or res[i] == "x")) or ((res[i-1] == ")" or res[i-1] == "x") and '0' <= res[i] <= '9') or ('0' <= res[i-1] <= '9' and (res[i] == "(" or res[i] == "x")):
+        if (res[i-1] in ")xei" and res[i] in "(xep") or (res[i-1] in ")xei" and '0' <= res[i] <= '9') or ('0' <= res[i-1] <= '9' and res[i] in "(xep"):
             res = res[:i] + '*' + res[i:]
             i += 2
         else:

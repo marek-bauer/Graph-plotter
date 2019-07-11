@@ -25,10 +25,7 @@ def string_to_lambda(string):
     return anc_string_to_lambda(s)
 
 
-def anc_string_to_lambda(string):
-    if string == "":
-        return lambda x: 0
-    operations = {
+operations = {
         "+": lambda a, b: a + b,
         "-": lambda a, b: a - b,
         "*": lambda a, b: a * b,
@@ -45,6 +42,11 @@ def anc_string_to_lambda(string):
         "arccos": lambda a, b: math.acos(a),
         "arctg": lambda a, b: math.atan(a),
     }
+
+
+def anc_string_to_lambda(string):
+    if string == "":
+        return lambda x: 0
     op, left, right = operation_split(string)
     if op == "number":
         return lambda x: float(left)
@@ -70,8 +72,6 @@ def anc_string_to_lambda(string):
 
 # Ancillary function for unary functions
 def unary_operation_split(data):
-    if data[0] == '(' and bracket_closer_pos(data, 0) == len(data) - 1:
-        return unary_operation_split(data[1:-1])
     if '0' <= data[0] <= '9':
         return "number", data, ""
     if data == "e":
