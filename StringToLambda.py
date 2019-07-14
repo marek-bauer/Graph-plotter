@@ -84,9 +84,10 @@ def unary_operation_split(data):
     for op in unary_operators:
         if re.search("^" + op, data):
             return op, data[len(op):].strip(), ""
-    if re.search("^log", data):
+    if re.search("^log", data):  # to repair
         temp = data.split(" ")
         return "log", temp[1], temp[2]
+    raise ValueError("String is incorrect")
 
 
 # Splits string of operation to (operator, left_argument, right,argument)
