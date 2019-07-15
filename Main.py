@@ -4,7 +4,8 @@ import math
 
 window = Tk()
 
-graph = Graph(window, width=300, height=300, function=lambda x: math.cos(3.14*x), derivative=lambda x: math.sin(3.14*x))
+graph = Graph(window, width=400, height=400, function=lambda x: math.sin(1 / x),
+              derivative=lambda x: math.cos(1 / x) * 1 / (x * x), graphX=10, graphY=10)
 controlFrame = Frame(window)
 
 graph.pack(side=LEFT)
