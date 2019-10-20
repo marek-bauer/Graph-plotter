@@ -22,7 +22,8 @@ def bracket_closer_pos(data, pos):
 def string_to_lambda(string):
     from StringPreparation import prepare
     s = prepare(string)
-    return anc_string_to_lambda(s)
+    r, t = anc_string_to_lambda(s)
+    return r
 
 
 operations = {
@@ -46,28 +47,26 @@ operations = {
 
 def anc_string_to_lambda(string):
     if string == "":
-        return lambda x: 0
+        return lambda x: 0, True
     op, left, right = operation_split(string)
     if op == "number":
-        return lambda x: float(left)
+        return lambda x: float(left), True
     if op == "x":
-        return lambda x: x
-    f_is_const = "x" not in left
-    g_is_const = "x" not in right
+        return lambda x: x, False
     o = operations.get(op)
-    f = anc_string_to_lambda(left)
-    g = anc_string_to_lambda(right)
+    f, f_is_const = anc_string_to_lambda(left)
+    g, g_is_const = anc_string_to_lambda(right)
     if f_is_const and g_is_const:
         temp = o(f(0), g(0))
-        return lambda x: temp
+        return lambda x: temp, True
     elif f_is_const and not g_is_const:
         temp = f(0)
-        return lambda x: o(temp, g(x))
+        return lambda x: o(temp, g(x)), False
     elif not f_is_const and g_is_const:
         temp = g(0)
-        return lambda x: o(f(x), temp)
+        return lambda x: o(f(x), temp), False
     else:
-        return lambda x: o(f(x), g(x))
+        return lambda x: o(f(x), g(x)), False
 
 
 # Ancillary function for unary functions
@@ -85,8 +84,9 @@ def unary_operation_split(data):
         if re.search("^" + op, data):
             return op, data[len(op):].strip(), ""
     if re.search("^log", data):  # to repair
-        temp = data.split(" ")
-        return "log", temp[1], temp[2]
+        b = data.find("(")
+        e = bracket_closer_pos(data, b)+1
+        return "log", data[b:e].strip(), data[e:].strip()
     raise ValueError("String is incorrect")
 
 
